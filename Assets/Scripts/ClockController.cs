@@ -4,12 +4,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Text.RegularExpressions;
+using UnityEngine.UI;
+using UnityEngine.Events;
+using TMPro;
 
 public class ClockController : MonoBehaviour
 {
+    public static bool isCanMoveArrows = false;
     [SerializeField] private string timeURL = "https://yandex.com/time/sync.json";
     [SerializeField] private ClockDisplay clockDisplay;
     [SerializeField] private int utcOffset = 3;
+    [SerializeField] private Button moveArrowsButton;
     private DateTime currentTime;
     private Coroutine realtimeCoro;
 
@@ -18,6 +23,28 @@ public class ClockController : MonoBehaviour
         currentTime = DateTime.Now;
         StartCoroutine(UpdateTimeFromUrl());
         StartRealtimeClock();
+        moveArrowsButton.onClick.AddListener(SetCanMoveArrows);
+    }
+
+    private void SetCanMoveArrows()
+    {
+        StopRealtimeClock();
+        isCanMoveArrows = true;
+
+        moveArrowsButton.GetComponentInChildren<TextMeshProUGUI>().text = "Click to resume";
+        moveArrowsButton.onClick.RemoveAllListeners();
+        moveArrowsButton.onClick.AddListener(StopMoveArrows);
+    }
+
+    private void StopMoveArrows()
+    {
+        isCanMoveArrows = false;
+        currentTime = clockDisplay.GetCurrentTimeFromArrows();
+        StartRealtimeClock();
+
+        moveArrowsButton.GetComponentInChildren<TextMeshProUGUI>().text = "Click to move arrows";
+        moveArrowsButton.onClick.RemoveAllListeners();
+        moveArrowsButton.onClick.AddListener(SetCanMoveArrows);
     }
 
     private IEnumerator EveryHourUpdate()
@@ -58,7 +85,7 @@ public class ClockController : MonoBehaviour
         var totalSeconds = regexResult.Remove(regexResult.Length - 3, 3);
         currentTime = new DateTime().AddSeconds(double.Parse(totalSeconds)).AddHours(utcOffset);
     }
-#endregion
+    #endregion
 
     #region RealtimeClock
     private void StopRealtimeClock()

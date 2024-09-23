@@ -14,19 +14,14 @@ public class ClockDisplay : MonoBehaviour
     [SerializeField] private float clockMoveDuration = 0.5f;
     [SerializeField] private Ease easeType = Ease.Linear;
 
-    [SerializeField] private Button button;
 
-    private void Start()
-    {
-        button.onClick.AddListener(() => Debug.Log(GetCurrentTimeFromArrows()));
-    }
 
     public void SetTime(float hours, float minutes, float seconds)
     {
         RotateArrow(hourArrow, GetRotationFromValue(hours % 12 + minutes / 60, 12));
         RotateArrow(minuteArrow, GetRotationFromValue(minutes + seconds / 60, 60));
         RotateArrow(secondArrow, GetRotationFromValue(seconds, 60));
-        timeText.text = $"{hours}:{minutes}:{seconds}";
+        timeText.text = $"{hours%12}:{minutes}:{seconds}";
     }
 
     private void RotateArrow(RectTransform rect, Quaternion angle)

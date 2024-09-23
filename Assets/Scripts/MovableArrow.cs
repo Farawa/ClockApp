@@ -15,7 +15,7 @@ public class MovableArrow : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
     private void Update()
     {
-        if (isNeedMove == false) return;
+        if (isNeedMove == false|| !ClockController.isCanMoveArrows) return;
         var screenCenter = new Vector2(Screen.width, Screen.height) / 2;
         var mousePos = (Vector2)Input.mousePosition - screenCenter;
         float angle = Vector3.Angle(new Vector3(0.0f, 1.0f, 0.0f), new Vector3(mousePos.x, mousePos.y, 0.0f));
