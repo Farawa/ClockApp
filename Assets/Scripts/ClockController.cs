@@ -22,8 +22,14 @@ public class ClockController : MonoBehaviour
     {
         currentTime = DateTime.Now;
         StartCoroutine(UpdateTimeFromUrl());
+        StartCoroutine(EveryHourUpdate());
         StartRealtimeClock();
         moveArrowsButton.onClick.AddListener(SetCanMoveArrows);
+    }
+
+    public void SetTime(DateTime dateTime)
+    {
+        currentTime = dateTime;
     }
 
     private void SetCanMoveArrows()
