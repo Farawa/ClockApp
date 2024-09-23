@@ -11,13 +11,29 @@ public class ClockController : MonoBehaviour
     [SerializeField] private ClockDisplay clockDisplay;
     [SerializeField] private int utcOffset = 3;
     private DateTime currentTime;
+    private Coroutine realtimeCoro;
 
     private void Start()
     {
         currentTime = DateTime.Now;
         StartCoroutine(UpdateTimeFromUrl());
+        StartRealtimeClock();
     }
 
+    private IEnumerator EveryHourUpdate()
+    {
+        while (gameObject)
+        {
+            yield return new WaitForSecondsRealtime(3600);
+        }
+    }
+
+    private void UpdateClock()
+    {
+        clockDisplay.SetTime(currentTime.Hour, currentTime.Minute, currentTime.Second);
+    }
+
+    #region TimeFromUrl
     private IEnumerator UpdateTimeFromUrl()
     {
         using (UnityWebRequest webRequest = UnityWebRequest.Get(timeURL))
@@ -42,24 +58,29 @@ public class ClockController : MonoBehaviour
         var totalSeconds = regexResult.Remove(regexResult.Length - 3, 3);
         currentTime = new DateTime().AddSeconds(double.Parse(totalSeconds)).AddHours(utcOffset);
     }
+#endregion
 
-    private void OnEnable()
+    #region RealtimeClock
+    private void StopRealtimeClock()
     {
-        StartCoroutine(RealtimeClockCoro());
+        StopCoroutine(realtimeCoro);
+        realtimeCoro = null;
     }
 
-    private void UpdateClock()
+    private void StartRealtimeClock()
     {
-        clockDisplay.SetTime(currentTime.Hour, currentTime.Minute, currentTime.Second);
+        if (realtimeCoro != null) return;
+        realtimeCoro = StartCoroutine(RealtimeClockCoro());
     }
 
     private IEnumerator RealtimeClockCoro()
     {
-        while (gameObject.activeSelf)
+        while (gameObject)
         {
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSecondsRealtime(1);
             currentTime = currentTime.AddSeconds(1d);
             UpdateClock();
         }
     }
+    #endregion
 }

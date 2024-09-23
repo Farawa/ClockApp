@@ -427,6 +427,7 @@ GameObject:
   - component: {fileID: 856743093}
   - component: {fileID: 856743095}
   - component: {fileID: 856743094}
+  - component: {fileID: 856743096}
   m_Layer: 5
   m_Name: ArrowSeconds
   m_TagString: Untagged
@@ -468,7 +469,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 30, y: 0, z: 30, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -491,6 +492,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 856743092}
   m_CullTransparentMesh: 1
+--- !u!114 &856743096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 856743092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef47a92f3486efb4689f25df5b8608cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &857308221
 GameObject:
   m_ObjectHideFlags: 0
@@ -765,7 +778,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1682725576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -782,6 +795,8 @@ MonoBehaviour:
   minuteArrow: {fileID: 1767398878}
   secondArrow: {fileID: 856743093}
   timeText: {fileID: 333171056}
+  clockMoveDuration: 0.2
+  easeType: 27
 --- !u!4 &1682725577
 Transform:
   m_ObjectHideFlags: 0
@@ -811,6 +826,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timeURL: https://yandex.com/time/sync.json
   clockDisplay: {fileID: 1682725576}
+  utcOffset: 3
 --- !u!1 &1767398877
 GameObject:
   m_ObjectHideFlags: 0
@@ -822,6 +838,7 @@ GameObject:
   - component: {fileID: 1767398878}
   - component: {fileID: 1767398880}
   - component: {fileID: 1767398879}
+  - component: {fileID: 1767398881}
   m_Layer: 5
   m_Name: ArrowMinutes
   m_TagString: Untagged
@@ -863,7 +880,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.24957967, g: 1, b: 0, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 30, y: 0, z: 30, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -886,6 +903,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1767398877}
   m_CullTransparentMesh: 1
+--- !u!114 &1767398881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1767398877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef47a92f3486efb4689f25df5b8608cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1866770515
 GameObject:
   m_ObjectHideFlags: 0
@@ -897,6 +926,7 @@ GameObject:
   - component: {fileID: 1866770516}
   - component: {fileID: 1866770518}
   - component: {fileID: 1866770517}
+  - component: {fileID: 1866770519}
   m_Layer: 5
   m_Name: ArrowHours
   m_TagString: Untagged
@@ -938,7 +968,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 30, y: 0, z: 30, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -961,6 +991,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1866770515}
   m_CullTransparentMesh: 1
+--- !u!114 &1866770519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1866770515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef47a92f3486efb4689f25df5b8608cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
