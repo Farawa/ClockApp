@@ -15,29 +15,32 @@ public class MovableArrow : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
     private void Update()
     {
-        if (isNeedMove == false|| !ClockController.isCanMoveArrows) return;
-        var screenCenter = new Vector2(Screen.width, Screen.height) / 2;
-        var mousePos = (Vector2)Input.mousePosition - screenCenter;
-        float angle = Vector3.Angle(new Vector3(0.0f, 1.0f, 0.0f), new Vector3(mousePos.x, mousePos.y, 0.0f));
-        if (mousePos.x < 0.0f)
+        if (isNeedMove == false || !ClockController.isCanMoveArrows) return;
+        var screenCenter = (Vector2)transform.position;
+        var a = Vector2.up;
+        var b = ((Vector2)Input.mousePosition - screenCenter).normalized;
+        decimal scalar = (decimal)(a.x * b.x + a.y * b.y);
+        decimal modA = (decimal)(Mathf.Sqrt(a.x * a.x + a.y * a.y));
+        decimal modB = (decimal)(Mathf.Sqrt(b.x * b.x + b.y * b.y));
+        decimal cos = (decimal)((scalar / (modA * modB)));
+        float angle = Mathf.Acos(float.Parse(cos.ToString())) * (180 / Mathf.PI);
+        if (b.x < 0.0f)
         {
             angle = -angle;
             angle = angle + 360;
         }
-        angle = 360-angle;
-        Debug.Log(angle);
+        angle = 360 - angle;
+        Debug.Log($"vA {a} vB {b} scalar {scalar} modA {modA} modB {modB} cos {cos} angle {angle}");
         rectTransform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        Debug.Log("not move");
         isNeedMove = false;
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        Debug.Log("move");
         isNeedMove = true;
     }
 }

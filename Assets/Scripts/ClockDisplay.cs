@@ -21,7 +21,7 @@ public class ClockDisplay : MonoBehaviour
         RotateArrow(hourArrow, GetRotationFromValue(hours % 12 + minutes / 60, 12));
         RotateArrow(minuteArrow, GetRotationFromValue(minutes + seconds / 60, 60));
         RotateArrow(secondArrow, GetRotationFromValue(seconds, 60));
-        timeText.text = $"{hours%12}:{minutes}:{seconds}";
+        timeText.text = $"{hours % 12}:{minutes}:{seconds}";
     }
 
     private void RotateArrow(RectTransform rect, Quaternion angle)
@@ -38,8 +38,8 @@ public class ClockDisplay : MonoBehaviour
     public DateTime GetCurrentTimeFromArrows()
     {
         var now = DateTime.Now;
-        var hour = (360 - hourArrow.eulerAngles.z) / 360 * 12;
-        var minute = (360 - minuteArrow.eulerAngles.z) / 360 * 60;
+        var hour = (360 - hourArrow.eulerAngles.z) / 360 * 12 - 1;
+        var minute = (360 - minuteArrow.eulerAngles.z) / 360 * 60 ;
         var seconds = (360 - secondArrow.eulerAngles.z) / 360 * 60;
         return new DateTime(now.Year, now.Month, now.Day, Mathf.RoundToInt(hour), Mathf.RoundToInt(minute), Mathf.RoundToInt(seconds));
     }

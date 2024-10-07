@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,12 +9,13 @@ public class InputTime : MonoBehaviour
     [SerializeField] private ClockController clockController;
     [SerializeField] private Button button;
 
-    private void Start()
+    public void SetButtonAction(Action callback)
     {
-        button.onClick.AddListener(SetTime);
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener(() => callback?.Invoke());
     }
 
-    private void SetTime()
+    public bool TrySetTime(out DateTime time)
     {
         try
         {
@@ -26,14 +24,16 @@ public class InputTime : MonoBehaviour
             var hour = float.Parse(times[0]);
             var minute = float.Parse(times[1]);
             var seconds = float.Parse(times[2]);
-            clockController.SetTime(new DateTime(now.Year, now.Month, now.Day, Mathf.RoundToInt(hour), Mathf.RoundToInt(minute), Mathf.RoundToInt(seconds)));
+            time = new DateTime(now.Year, now.Month, now.Day, Mathf.RoundToInt(hour), Mathf.RoundToInt(minute), Mathf.RoundToInt(seconds));
             inputField.text = "";
-            inputField.placeholder.GetComponent<TextMeshProUGUI>().text = "time is set";
+            return true;
         }
         catch
         {
             inputField.text = "";
             inputField.placeholder.GetComponent<TextMeshProUGUI>().text = "error format or value";
+            time = DateTime.Now;
+            return false;
         }
     }
 }

@@ -1,30 +1,26 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Text.RegularExpressions;
 using UnityEngine.UI;
-using UnityEngine.Events;
 using TMPro;
 
 public class ClockController : MonoBehaviour
 {
     public static bool isCanMoveArrows = false;
-    [SerializeField] private string timeURL = "https://yandex.com/time/sync.json";
-    [SerializeField] private ClockDisplay clockDisplay;
+    [SerializeField] private bool isUseRosvel = true;
     [SerializeField] private int utcOffset = 3;
-    [SerializeField] private Button moveArrowsButton;
-    private DateTime currentTime;
+    [SerializeField] private ClockDisplay clockDisplay;
+    public DateTime currentTime { get; private set; }
     private Coroutine realtimeCoro;
 
     private void Start()
     {
         currentTime = DateTime.Now;
-        StartCoroutine(UpdateTimeFromUrl());
+        UpdateTime();
         StartCoroutine(EveryHourUpdate());
         StartRealtimeClock();
-        moveArrowsButton.onClick.AddListener(SetCanMoveArrows);
     }
 
     public void SetTime(DateTime dateTime)
@@ -32,25 +28,18 @@ public class ClockController : MonoBehaviour
         currentTime = dateTime;
     }
 
-    private void SetCanMoveArrows()
+    public void StopMoveArrows()
     {
         StopRealtimeClock();
         isCanMoveArrows = true;
-
-        moveArrowsButton.GetComponentInChildren<TextMeshProUGUI>().text = "Click to resume";
-        moveArrowsButton.onClick.RemoveAllListeners();
-        moveArrowsButton.onClick.AddListener(StopMoveArrows);
+        UpdateClock();
     }
 
-    private void StopMoveArrows()
+    public void ResumeTimeClock()
     {
         isCanMoveArrows = false;
         currentTime = clockDisplay.GetCurrentTimeFromArrows();
         StartRealtimeClock();
-
-        moveArrowsButton.GetComponentInChildren<TextMeshProUGUI>().text = "Click to move arrows";
-        moveArrowsButton.onClick.RemoveAllListeners();
-        moveArrowsButton.onClick.AddListener(SetCanMoveArrows);
     }
 
     private IEnumerator EveryHourUpdate()
@@ -58,6 +47,14 @@ public class ClockController : MonoBehaviour
         while (gameObject)
         {
             yield return new WaitForSecondsRealtime(3600);
+            if (isUseRosvel)
+            {
+                StartCoroutine(UpdateTimeFromUrlRoswell());
+            }
+            else
+            {
+                StartCoroutine(UpdateTimeFromUrlYandex());
+            }
         }
     }
 
@@ -67,29 +64,62 @@ public class ClockController : MonoBehaviour
     }
 
     #region TimeFromUrl
-    private IEnumerator UpdateTimeFromUrl()
+    private void UpdateTime()
     {
-        using (UnityWebRequest webRequest = UnityWebRequest.Get(timeURL))
+        if (isUseRosvel)
+        {
+            StartCoroutine(UpdateTimeFromUrlRoswell());
+        }
+        else
+        {
+            StartCoroutine(UpdateTimeFromUrlYandex());
+        }
+    }
+
+    private IEnumerator UpdateTimeFromUrlYandex()
+    {
+        using (UnityWebRequest webRequest = UnityWebRequest.Get("https://yandex.com/time/sync.json"))
         {
             yield return webRequest.SendWebRequest();
 
             if (webRequest.result == UnityWebRequest.Result.Success)
             {
-                ParseResult(webRequest.downloadHandler.text);
+                ParseResultYandex(webRequest.downloadHandler.text);
             }
             else
             {
                 currentTime = DateTime.Now;
             }
         }
+        void ParseResultYandex(string text)
+        {
+            string pattern = "[0-9]{5,}";
+            var regexResult = Regex.Match(text, pattern).ToString();
+            var totalSeconds = regexResult.Remove(regexResult.Length - 3, 3);
+            currentTime = new DateTime().AddSeconds(double.Parse(totalSeconds)).AddHours(utcOffset);
+        }
     }
 
-    private void ParseResult(string result)
+    private IEnumerator UpdateTimeFromUrlRoswell()
     {
-        string pattern = "[0-9]{5,}";
-        var regexResult = Regex.Match(result, pattern).ToString();
-        var totalSeconds = regexResult.Remove(regexResult.Length - 3, 3);
-        currentTime = new DateTime().AddSeconds(double.Parse(totalSeconds)).AddHours(utcOffset);
+        using (UnityWebRequest webRequest = UnityWebRequest.Get("https://roswell.systems/"))
+        {
+            yield return webRequest.SendWebRequest();
+
+            if (webRequest.result == UnityWebRequest.Result.Success)
+            {
+                ParseResultRoswell(webRequest.downloadHandler.text);
+            }
+            else
+            {
+                currentTime = DateTime.Now;
+            }
+        }
+        void ParseResultRoswell(string text)
+        {
+            var totalSeconds = text.Split(" ")[0];
+            currentTime = new DateTime().AddSeconds(double.Parse(totalSeconds)).AddHours(utcOffset);
+        }
     }
     #endregion
 
@@ -102,7 +132,8 @@ public class ClockController : MonoBehaviour
 
     private void StartRealtimeClock()
     {
-        if (realtimeCoro != null) return;
+        if (realtimeCoro != null) StopCoroutine(realtimeCoro);
+        UpdateTime();
         realtimeCoro = StartCoroutine(RealtimeClockCoro());
     }
 
